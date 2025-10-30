@@ -1,4 +1,4 @@
-setwd("C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/")
+
 
 library(tidyverse)
 library(dplyr)
@@ -10,26 +10,25 @@ library(lubridate)
 library(readxl)
 library(ggplot2)
 
-A<- read_csv("C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/AFRO_LQAS_data.csv")
+A<- read_csv("C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/LCB_LQAS_data.csv")
 
-LQAS_rep<-A |>
+C<-A |>
   filter(start_date >  as_date(2019-10-1)) |>
   arrange(start_date) 
-# B$end_date <- ymd(B$end_date)
-# year(B$end_date[year(B$end_date) == 2028]) <- 2023
-# year(B$end_date[year(B$end_date) == 2025]) <- 2024
+# B$lqas_end_date <- ymd(B$lqas_end_date)
+# year(B$lqas_end_date[year(B$lqas_end_date) == 2028]) <- 2023
+# year(B$lqas_end_date[year(B$lqas_end_date) == 2025]) <- 2024
 
+B <- C %>%
+  mutate(performance = case_when(
+    performance == "High" ~ "high",
+    performance == "Moderate" ~ "moderate",
+    performance == "Very_poor" ~ "very poor",
+    performance == "Poor" ~ "poor",
+    TRUE ~ performance  # Keep other values unchanged
+  ))
 
-C<-A |> 
-  mutate(
-    start_date = case_when(
-      response == "Mop_Up" & start_date ==2024-06-05~ as_date("2024-04-28"),
-      response == "Revaccination" & start_date ==2024-05-05~ as_date("2024-04-28"),
-      response == "Revaccination" & start_date ==2024-05-04~ as_date("2024-04-28"),
-      response == "SNID" & start_date ==2024-05-04~ as_date("2024-04-28"),
-      TRUE ~ start_date))
-
-D<-C |> 
+D<-B |> 
   mutate(country =  case_when(
     country =="Ethiopia" ~ "ETH",
     TRUE ~ country)) 
@@ -42,7 +41,8 @@ E<-D |>
 
 G <- E |>
   mutate(province = toupper(province),
-         district = toupper(district)) |> 
+         district = toupper(district)) |>
+  mutate(country_code = country) |> 
   mutate(
     country = case_when(
       country == "GAM" ~ "GAMBIA",
@@ -83,6 +83,57 @@ G <- E |>
       TRUE ~ country
     ),
     district = case_when(
+      country	=="MAURITANIA"&	district	=="BARKÉOL" ~	"BARKÉOLE",
+      country	=="MAURITANIA"&	district	=="GUÉROU" ~	"GUÉRROU",
+      country	=="MAURITANIA"&	district	=="BARKÃ‰OLE" ~	"BARKÉOLE",
+      country	=="MAURITANIA"&	district	=="GUÃ‰RROU" ~	"GUÉRROU",
+      country	=="MAURITANIA"&	district	=="MAGTAA LAHJAR" ~	"MAGTA LAHJAR",
+      country	=="MAURITANIA"&	district	=="MBAGNE" ~	"M'BAGNE",
+      country	=="MAURITANIA"&	district	=="BABABÃ‰" ~	"BABABÉ",
+      country	=="MAURITANIA"&	district	=="BOGHÃ‰" ~	"BOGHÉ",
+      country	=="MAURITANIA"&	district	=="KAÉDI" ~	"KAEDI",
+      country	=="MAURITANIA"&	district	=="KHABOU" ~	"GHABOU",
+      country	=="MAURITANIA"&	district	=="OULD YENGÉ" ~	"OULD YENGE",
+      country	=="MAURITANIA"&	district	=="DJIGUENNI" ~	"DJIGUENI",
+      country	=="MAURITANIA"&	district	=="TEMBEDRA" ~	"TIMBÉDRA",
+      country	=="MAURITANIA"&	district	=="NÃ‰MA" ~	"NÉMA",
+      country	=="MAURITANIA"&	district	=="TIMBÃ‰DRA" ~	"TIMBÉDRA",
+      country	=="MAURITANIA"&	district	=="BENECHAB" ~	"BENECHABE",
+      country	=="MAURITANIA"&	district	=="MOUDJÃ‰RIA" ~	"MOUDJÉRIA",
+      country	=="MAURITANIA"&	district	=="BIR MOGREIN" ~	"BIR MOGHREN",
+      country	=="MAURITANIA"&	district	=="FDÉRIK" ~	"F'DERICK",
+      country	=="MAURITANIA"&	district	=="ZOUÉRATT" ~	"ZOUÉRAT",
+      country	=="MAURITANIA"&	district	=="ZOUÃ‰RAT" ~	"ZOUÉRAT",
+      country	=="MAURITANIA"&	district	=="KEUR MACÈNE" ~	"KEUR MACENE",
+      country	=="MAURITANIA"&	district	=="THÉIKANE" ~	"TEIKANE",	
+      country	=="GAMBIA"&	district	=="CENTRAL RIVER Province" ~	"CENTRAL RIVER REGION",
+      country	=="BURKINA FASO"&	district	=="GOROM GOROM" ~	"GOROM",
+      country	=="BURKINA FASO"&	district	=="PÃ”" ~	"PÔ",
+      country	=="GUINEA"&	district	=="KÉROUANÉ" ~	"KÉROUANE",
+      country	=="GUINEA"&	district	=="FORECAREAH" ~	"FORÉCARIAH",
+      country	=="GUINEA"&	district	=="N'ZEREKORÉ" ~	"N'ZÉRÉKORÉ",
+      country	=="GUINEA"&	district	=="LABÃ‰" ~	"LABÉ",
+      country	=="GUINEA"&	district	=="TOUGUÃ‰" ~	"TOUGUÉ",
+      country	=="SIERRA LEONE"&	district	=="PORTLOKO" ~	"PORT LOKO",
+      country	=="SIERRA LEONE"&	district	=="WESTERN AREA RURAL" ~	"WESTERN RURAL",
+      country	=="SIERRA LEONE"&	district	=="WESTERN AREA URBAN" ~	"WESTERN URBAN",	
+      country	=="GHANA"&	district	=="LOWER-MANYA-KROBO" ~	"LOWER-MANYA KROBO",
+      country	=="TOGO"&	district	=="EST_MONO" ~	"EST-MONO",
+      country	=="TOGO"&	district	=="MOYEN_MONO" ~	"MOYEN-MONO",
+      country	=="TOGO"&	district	=="TÔNE" ~	"TONE",
+      country	=="TOGO"&	district	=="MÃ”" ~	"MÔ",
+      country	=="TOGO"&	district	=="KÃ‰RAN" ~	"KÉRAN",
+      country	=="TOGO"&	district	=="AGOÃˆ" ~	"AGOÈ",
+      country	=="TOGO"&	district	=="AVÃ‰" ~	"AVÉ",
+      country	=="TOGO"&	district	=="AKÃ‰BOU" ~	"AKÉBOU",
+      country	=="TOGO"&	district	=="ANIÃ‰" ~	"ANIÉ",
+      country	=="TOGO"&	district	=="KPÃ‰LÃ‰" ~	"KPÉLÉ",
+      country	=="TOGO"&	district	=="CINKASSÃ‰" ~	"CINKASSÉ",
+      country	=="BEINI"&	district	=="DASSA-ZOUME" ~	"DASSA-ZOUNME",
+      country	=="SENEGAL"&	district	=="KÃ‰DOUGOU" ~	"KEDOUGOU",
+      country	=="SENEGAL"&	district	=="SALÃ‰MATA" ~	"SALEMATA",
+      country	=="SENEGAL"&	district	=="SÃ‰DHIOU" ~	"SEDHIOU",
+      country	=="SENEGAL"&	district	=="SARAYA" ~	"SARAYA",
       country	=="MALI"&	district	=="district KOULIKORO" ~	"KOULIKORO",
       country	=="MALI"&	district	=="district SIKASSO" ~	"SIKASSO",
       country	=="GUINEA"&	district	=="NZEREKORE" ~	"N'ZÉRÉKORÉ",
@@ -414,6 +465,25 @@ G <- E |>
         district	== "CITE DES PALMIERS" ~	"CITE PALMIERS",
       country	== "GUINEA" &	district	== "NZEREKORE" ~	"N'ZÉRÉKORÉ",
       country	== "GUINEA" &	district	== "N'ZÃ‰RÃ‰KORÃ‰" ~	"N'ZÉRÉKORÉ",
+      country	=="COTE D IVOIRE"&	district	=="YOPOUGON-EST" ~	"YOPOUGON EST",
+      country	=="COTE D IVOIRE"&	district	=="YOPOUGON-OUEST SONGON" ~	"YOPOUGON OUEST-SONGON",
+      country	=="COTE D IVOIRE"&	district	=="COCODY BINGERVILLE" ~	"COCODY-BINGERVILLE",
+      country	=="COTE D IVOIRE"&	district	=="PORT-BOUET-VRIDI" ~	"PORT BOUET-VRIDI",
+      country	=="COTE D IVOIRE"&	district	=="BOUAKE-SUD" ~	"BOUAKE SUD",
+      country	=="COTE D IVOIRE"&	district	=="M'BATTO" ~	"MBATTO",
+      country	=="COTE D IVOIRE"&	district	=="KOUASSI KOUASSIKRO" ~	"KOUASSI-KOUASSIKRO",
+      country	=="COTE D IVOIRE"&	district	=="M'BENGUE" ~	"MBENGUE",
+      country	=="COTE D IVOIRE"&	district	=="SAN-PEDRO" ~	"SANPEDRO",
+      country	=="COTE D IVOIRE"&	district	=="ABOBO-EST" ~	"ABOBO EST",
+      country	=="COTE D IVOIRE"&	district	=="ABOBO-OUEST" ~	"ABOBO OUEST",
+      country	=="COTE D IVOIRE"&	district	=="YOPOUGON-OUEST" ~	"YOPOUGON EST",
+      country	=="COTE D IVOIRE"&	district	=="ADJAME-ATTECOUBE-PLATEAU" ~	"ADJAME-PLATEAU-ATTECOUBE",
+      country	=="COTE D IVOIRE"&	district	=="M'BAHIAKRO" ~	"MBAHIAKRO",
+      country	=="COTE D IVOIRE"&	district	=="DS BOUNA" ~	"BOUNA",
+      country	=="COTE D IVOIRE"&	district	=="DS DOROPO" ~	"DOROPO",
+      country	=="COTE D IVOIRE"&	district	=="DS NASSIAN" ~	"NASSIAN",
+      country	=="COTE D IVOIRE"&	district	=="DS TEHINI" ~	"TEHINI",
+      country	=="COTE D IVOIRE"&	district	=="DS BONDOUKOU (DR TEFRODOUO)" ~	"BONDOUKOU",
       country	== "COTE D IVOIRE" &
         district	== "ADJAME_PLATEAU_ATTECOUBE" ~	"ADJAME-PLATEAU-ATTECOUBE",
       country	== "COTE D IVOIRE" &
@@ -503,14 +573,14 @@ G <- E |>
       country == "BURKINA FASO" & district == "NDOROLA" ~ "N'DOROLA",
       country == "BURKINA FASO" & district == "PO" ~ "PÔ",
       country == "BURUNDI" & district == "GATERANYI" ~ "GITERANYI",
-      country == "BOTSWANA" & district == "GHANZI" ~ "GANTSI",
+      # country == "BOTSWANA" & district == "GHANZI" ~ "GANTSI",
       country == "BOTSWANA" &
         district == "GREATER FRANCISTOWN" ~ "FRANCISTOWN",
       country == "BOTSWANA" & district == "KANYE" ~ "KANYE/MOSHUPA",
       country == "BOTSWANA" &
         district == "KGALAGADI NORTH" ~ "KGALAGADI",
       country == "BOTSWANA" & district == "SEROWE" ~ "SEROWE/PALAPYE",
-      country	== "BOTSWANA" &	district	== "CHARLESHILL" ~	"GANTSI",
+      # country	== "BOTSWANA" &	district	== "CHARLESHILL" ~	"GANTSI",
       country	== "BOTSWANA" &	district	== "KGALAGADI SOUTH" ~	"KGALAGADI",
       country	== "BOTSWANA" &	district	== "MOSHUPA" ~	"KANYE/MOSHUPA",
       country	== "BOTSWANA" &	district	== "PALAPYE" ~	"SEROWE/PALAPYE",
@@ -707,6 +777,14 @@ G <- E |>
         district	== "COMMONWEALTH district" ~	"COMMONWEALTH",
       country	== "LIBERIA" &	district	== "DUGBE" ~	"DUGBE RIVER",
       country	== "LIBERIA" &	district	== "BAROBO FARJAH" ~	"BAROBO FAJAH",
+      country	=="MALI" &	district	=="DIOLA" ~	"DIOILA",
+      country	=="MALI" &	district	=="KALABAN" ~	"KALABANCORO",
+      country	=="MALI" &	district	=="KOLONTIEBA" ~	"KOLONDIEBA",
+      country	=="MALI" &	district	=="KOULIKOROO" ~	"KOULIKORO",
+      country	=="MALI" &	district	=="SOFETO" ~	"SEFETO",
+      country	=="MALI" &	district	=="KALABAN CORO" ~	"KALABANCORO",
+      country	=="MALI" &	district	=="TIN-ESSAKO" ~	"TINESSAKO",
+      country	=="MALI" &	district	=="ALOURCHE" ~	"AL-OURCHE",
       country	== "MALI" &	district	 == "KALABAN-CORO" ~	"KALABANCORO",
       country	== "MALI" &	district	 == "TAOUDENIT" ~	"TAOUDENI",
       country	== "MALI" &
@@ -1166,11 +1244,19 @@ G <- E |>
         district	== "KIBITI DC" ~	"KIBITI TC",
       country	== "UNITED REPUBLIC OF TANZANIA" &
         district	== "KIGOMA UJIJI MC" ~	"KIGOMA MC",
+      country	=="KENYA"&	province	=="BUSIA" &	district	=="TESO-CENTRAL" ~	"TESO CENTRAL",
+      country	=="KENYA"&	province	=="BUSIA" &	district	=="TESO-NORTH" ~	"TESO NORTH",
+      country	=="KENYA"&	province	=="BUSIA" &	district	=="TESO-SOUTH" ~	"TESO SOUTH",
+      country	=="KENYA"&	province	=="KAJIADO" &	district	=="KAJIADO EAST" ~	"KAJIADO EAST",
+      country	=="KENYA"&	province	=="KAJIADO" &	district	=="KAJIADO NORTH" ~	"KAJIADO NORTH",
+      country	=="KENYA"&	province	=="KITUI" &	district	=="KITUI CENTAL" ~	"KITUI CENTRAL",
+      country	=="KENYA"&	province	=="MANDERA" &	district	=="KOTULO" ~	"KUTULO",
       country	== "TOGO" &	district	== "BAS MONO" ~	"BAS-MONO",
       country	== "TOGO" &	district	== "AGOE NYIVE" ~	"AGOE",
       country	== "TOGO" &	district	== "EST MONO" ~	"EST-MONO",
       country	== "TOGO" &	district	== "MOYEN MONO" ~	"MOYEN-MONO",
-      country	== "UGANDA" &	district	== "ADJUMANI district" ~	"ADJUMANI",
+      country	== "UGANDA" &	district	== "ADJUMANI district" ~	"ADJUMANI", 
+      country	== "UGANDA" &	district	== "SOROTI DISTRICT" ~	"SOROTI",
       country	== "UGANDA" &	district	== "ARUA CITY" ~	"ARUA",
       country	== "UGANDA" &	district	== "ARUA district" ~	"ARUA",
       country	== "UGANDA" &	district	== "KOBOKO district" ~	"KOBOKO",
@@ -1360,6 +1446,78 @@ G <- E |>
       TRUE ~ district
     ),
     province = case_when(
+      country	=="MOZAMBIQUE"&	province	=="CABO DELGADO" &	district	=="MOCIMBOA DA PRAIA" ~	"MOCÍMBOA DA PRAIA",
+      country	=="MOZAMBIQUE"&	province	=="NIASSA" &	district	=="CIDADE DE LICHINGA" ~	"DISTRITO DE LICHINGA",
+      country	=="MOZAMBIQUE"&	province	=="NIASSA" &	district	=="N'GAUMA" ~	"NGAÚMA",
+      country	=="MOZAMBIQUE"&	province	=="NIASSA" &	district	=="NGAUMA" ~	"NGAÚMA",
+      country	=="MOZAMBIQUE"&	province	=="GAZA" &	district	=="GUIJA" ~	"GUIJÁ",
+      country	=="MOZAMBIQUE"&	province	=="GAZA" &	district	=="MANDLACAZE" ~	"MANDLAKAZI",
+      country	=="MOZAMBIQUE"&	province	=="PROVINCIA DE NAMPULA" &	district	=="CIDADE DE NAMPULA" ~	"DISTRITO DE NAMPULA",
+      country	=="MOZAMBIQUE"&	province	=="PROVINCIA DE SOFALA" &	district	=="MARINGUE" ~	"MARÍNGUE",
+      country	=="MOZAMBIQUE"&	province	=="INHAMBANE" &	district	=="VILANKULO" ~	"VILANKULOS",
+      country	=="MOZAMBIQUE"&	province	=="SOFALA" &	district	=="MARÃNGUE" ~	"MARÍNGUE",
+      country	=="MOZAMBIQUE"&	province	=="GAZA" &	district	=="GUIJÃ" ~	"GUIJÁ",
+      country	=="MOZAMBIQUE"&	province	=="NIASSA" &	district	=="NGAÃŠMA" ~	"NGAÚMA",
+      country	=="ZAMBIA"&	province	=="CENTRAL" &	district	=="KAPIRI" ~	"KAPIRI-MPOSHI",	
+      country	=="ZAMBIA"&	province	=="NORTH WESTERN" &	district	=="IKELENGI" ~	"IKELENGE",	
+      country	=="ZAMBIA"&	province	=="NORTH WESTERN" &	district	=="MUSHINDAMO" ~	"MUSHINDANO",	
+      country	=="ZAMBIA"&	province	=="MUCHINGA" &	district	=="KANCHIBYA" ~	"KANCHIBIYA",	
+      country	=="ZAMBIA"&	province	=="MUCHINGA" &	district	=="SHIWANGANDU" ~	"SHIWANG'ANDU",	
+      country	=="UGANDA"&	province	=="KAMPALA CITY AUTHORITY" &	district	=="KAMPALA CITY AUTHORITY" ~	"KAMPALA",
+      country	=="UGANDA"&	province	=="SSEMBABULE" &	district	=="SSEMBABULE" ~	"SEMBABULE",
+      country	=="ANGOLA"&	province	=="BENGUELA" &	district	=="BAÍA FARTA" ~	"BAIA FARTA",
+      country	=="ANGOLA"&	province	=="CABINDA" &	district	=="BUCO-ZAU" ~	"BUCO ZAU",
+      country	=="ANGOLA"&	province	=="CUANZA NORTE" &	district	=="SAMBA CAJÚ" ~	"SAMBA CAJU",
+      country	=="ANGOLA"&	province	=="HUAMBO" &	district	=="CAÁLA" ~	"CAALA",
+      country	=="ANGOLA"&	province	=="HUAMBO" &	district	=="CATCHIUNGO (EX-BELA VISTA)" ~	"KATCHIUNGO",
+      country	=="ANGOLA"&	province	=="HUAMBO" &	district	=="CHICALA-CHOLOANGA (EX-VILA NOVA)" ~	"TCHIKALA TCHOLOHANGA",
+      country	=="ANGOLA"&	province	=="HUAMBO" &	district	=="CHINJENJE" ~	"TCHINJENJE",
+      country	=="ANGOLA"&	province	=="HUAMBO" &	district	=="UCUMA (EX-CUMA)" ~	"UKUMA",
+      country	=="ANGOLA"&	province	=="LUANDA" &	district	=="ÍCOLO E BENGO" ~	"ICOLO E BENGO",
+      country	=="ANGOLA"&	province	=="LUNDA-NORTE" &	district	=="LÓVUA" ~	"LOVUA",
+      country	=="ANGOLA"&	province	=="LUNDA-NORTE" &	district	=="XÁ MUTEBA" ~	"XA MUTEBA",
+      country	=="ANGOLA"&	province	=="MALANJE" &	district	=="KIWABA NZOJI" ~	"KIWABA NZOGI",
+      country	=="ANGOLA"&	province	=="MALANJE" &	district	=="KUNDA-DYA-BASE" ~	"KUNDA-DIA-BAZE",
+      country	=="ANGOLA"&	province	=="MOXICO" &	district	=="LÉUA" ~	"LÉUA",
+      country	=="ANGOLA"&	province	=="MOXICO" &	district	=="LUMEJE CAMEIA" ~	"LUMEJE CAMEIA",
+      country	=="ANGOLA"&	province	=="NAMIBE" &	district	=="TÔMBUA" ~	"TOMBUA",
+      country	=="ANGOLA"&	province	=="UÍGE" &	district	=="ALTO CAUALE (CANGOLA)" ~	"CANGOLA",
+      country	=="ANGOLA"&	province	=="UÍGE" &	district	=="UÍGE" ~	"UIGE",
+      country	=="ANGOLA"&	province	=="ZAIRE" &	district	=="MBANZA KONGO" ~	"MBANZA CONGO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="HAUT KATANGA" &	district	=="KAMALONDA" ~	"KAMALONDO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="EQUATEUR" &	district	=="INGENGE" ~	"INGENDE",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="EQUATEUR" &	district	=="LILANGA BOGANGI" ~	"LILANGA BOBANGI",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="ITURI" &	district	=="BAMBU MINE" ~	"BAMBU-MINES",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KINSHASA" &	district	=="MASANI I" ~	"MASINA I",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KONGO CENTRAL" &	district	=="MANGAMBO" ~	"MANGEMBO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KWANGO" &	district	=="POKOKABAKA" ~	"POPOKABAKA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KWILU" &	district	=="KINKONGO" ~	"KIKONGO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="NORD KIVU" &	district	=="NYRIRAGONGO" ~	"NYIRAGONGO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="NORD UBANGI" &	district	=="BILI 2" ~	"BILI2",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SANKURU" &	district	=="DIJALO-NDJEKA" ~	"DJALO-NDJEKA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SUD-KIVU" &	district	=="KAHELE" ~	"KALEHE",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SUD-KIVU" &	district	=="HAUTS PLATEAU UVIRA" ~	"HAUTS PLATEAUX UVIRA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KINSHASA" &	district	=="BIYALA" ~	"BIYELA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="EQUATEUR" &	district	=="MANKANZA" ~	"MAKANZA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="ITURI" &	district	=="BAMBU MINES" ~	"BAMBU-MINES",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KASAI CENTRAL" &	district	=="LUBUNGA KOC" ~	"LUBUNGA2",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KASAI ORIENTAL" &	district	=="KABEYA KAMUANGA" ~	"KABEYA KAMWANGA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KASAI" &	district	=="NDJOKU PUNDA" ~	"NDJOKO PUNDA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KINSHASA" &	district	=="BINZA-MÉTÉO" ~	"BINZA-METEO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KINSHASA" &	district	=="LIMETÉ" ~	"LIMETE",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KONGO CENTRAL" &	district	=="NSONA MPAGNU" ~	"NSONA-PANGU",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="LOMAMI" &	district	=="KALAMBAYI KAB" ~	"KALAMBAYI KABANGA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="NORD KIVU" &	district	=="MANGUREJIPA" ~	"MANGUREDJIPA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="NORD KIVU" &	district	=="NYIRANGONGO" ~	"NYIRAGONGO",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SUD KIVU" &	district	=="HAUTS PLATEAUX D'UVIRA" ~	"HAUTS PLATEAUX UVIRA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SUD KIVU" &	district	=="MITI - MURHESA" ~	"MITI-MURRHESA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="TSHOPO" &	district	=="MAKISO KISANGANI" ~	"MAKISO-KISANGANI",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="KASAI ORIENTAL" &	district	=="LUKELENGE" ~	"LUKALENGE",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="MONGALA" &	district	=="BOSOMONDANDA" ~	"BOSOMODANDA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="NORD KIVU" &	district	=="KIRISIMBI" ~	"KARISIMBI",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SANKURU" &	district	=="VANGAKETE" ~	"VANGA-KETE",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="SUD KIVU" &	district	=="HAUT PLATEAUX D'UVIRA" ~	"HAUTS PLATEAUX UVIRA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO"&	province	=="TSHOPO" &	district	=="WANIERUKULA" ~	"WANIE-RUKULA",
       country	== "BENIN" &
         province	== "ATLANTIQUE" &
         district	== "ABOMEY-CALAVI 1" ~	"ATLANTIQUE",
@@ -1796,6 +1954,41 @@ G <- E |>
         province	== "KASAI-CENTRAL" ~	"KASAI CENTRAL",
       country	== "DEMOCRATIC REPUBLIC OF THE CONGO" &
         province	== "MAI-NDOMBE" ~	"MAINDOMBE",
+      country	=="LIBERIA"&	province	=="BOMI" &	district	=="DEWOIN" ~	"DOWEIN",
+      country	=="LIBERIA"&	province	=="BOMI" &	district	=="TUBMANBURG" ~	"BOMI",
+      country	=="LIBERIA"&	province	=="BONG" &	district	=="FUAMA" ~	"FUAMAH",
+      country	=="LIBERIA"&	province	=="BONG" &	district	=="KPAII" ~	"KPAAI",
+      country	=="LIBERIA"&	province	=="GBARPOLU" &	district	=="BELLE" ~	"BELLEH",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="DISTRICT # 3A&B" ~	"DISTRICT # 3A & 3B",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="DISTRICT #1" ~	"DISTRICT # 1",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="DISTRICT #2" ~	"DISTRICT # 2",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="DISTRICT #4" ~	"DISTRICT # 4",
+      country	=="LIBERIA"&	province	=="GRAND CAPE MOUNT" &	district	=="GOLA KONNEH" ~	"GOLAKONNEH",
+      country	=="LIBERIA"&	province	=="GRAND CAPE MOUNT" &	district	=="ROBERTSPORT/COMWEALTH" ~	"COMMONWEALTH-C",
+      country	=="LIBERIA"&	province	=="GRAND GEDEH" &	district	=="BHAI" ~	"B'HAI",
+      country	=="LIBERIA"&	province	=="GRAND GEDEH" &	district	=="TCHEIN" ~	"TCHIEN",
+      country	=="LIBERIA"&	province	=="MARGIBI" &	district	=="MAMBA KABA" ~	"MAMBAH-KABA",
+      country	=="LIBERIA"&	province	=="MARYLAND" &	district	=="BAROBO/FARJAH" ~	"BAROBO FAJAH",
+      country	=="LIBERIA"&	province	=="MARYLAND" &	district	=="BAROBO/WHOJAY" ~	"BARROBO WHOJAH",
+      country	=="LIBERIA"&	province	=="MARYLAND" &	district	=="KARLUWAY # 1" ~	"KARLUWAY 1",
+      country	=="LIBERIA"&	province	=="MARYLAND" &	district	=="KARLUWAY # 2" ~	"KARLUWAY 2",
+      country	=="LIBERIA"&	province	=="MONTSERRADO" &	district	=="ST. PAUL" ~	"ST. PAUL RIVER",
+      country	=="LIBERIA"&	province	=="NIMBA" &	district	=="SANNIQUELLIE MAHN" ~	"SANNIQUELLEH MAHN",
+      country	=="LIBERIA"&	province	=="NIMBA" &	district	=="YARWEIN MEHNSONNOH" ~	"YARWEIN MEHNSOHNNEH",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="CENTRAL C DISTRICT" ~	"CENTRAL C",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="DOEDIAN DISTRICT" ~	"DOEDAIN",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="JOE RIVER DISTRICT" ~	"JOE RIVER",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="JOWEIN DISTRICT" ~	"JOWEIN",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="TIMBO DISTRICT" ~	"TIMBO",
+      country	=="LIBERIA"&	province	=="RIVERCESS" &	district	=="YARNIE DISTRICT" ~	"YARNIE",
+      country	=="LIBERIA"&	province	=="SINOE" &	district	=="JAEDAE" ~	"JEADE",
+      country	=="LIBERIA"&	province	=="SINOE" &	district	=="PYNE TOWN" ~	"PYNES TOWN",
+      country	=="LIBERIA"&	province	=="SINOE" &	district	=="TARJUWOON" ~	"TARJUWON",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="C-WOOD" ~	"CAMP WOOD",
+      country	=="LIBERIA"&	province	=="GRAND BASSA" &	district	=="DISTRICT # 3" ~	"DISTRICT # 3A & 3B",
+      country	=="LIBERIA"&	province	=="NIMBA" &	district	=="GBEHLAY GEH" ~	"GBEHLAY-GEH",
+      country	=="LIBERIA"&	province	=="NIMBA" &	district	=="SACLEPEA" ~	"SACLEPEA-MAHN",
+      country	=="LIBERIA"&	province	=="NIMBA" &	district	=="ZOE GEH" ~	"ZOE-GEH",
       country	== "MADAGASCAR" &
         province	== "ATSIMO ATSINANANA" &
         district	== "MIDONGY-ATSIMO" ~	"FIANARANTSOA",
@@ -4187,8 +4380,8 @@ G <- E |>
         province	== "WEST" &	district	== "NYABIHU" ~	"OUE",
       country	== "RWANDA" &
         province	== "WEST" &	district	== "RUTSIRO" ~	"OUE",
-      country	== "BOTSWANA" &
-        province	== "CHARLESHILL" &	district	== "GANTSI" ~	"GANTSI",
+      # country	== "BOTSWANA" &
+      #   province	== "CHARLESHILL" &	district	== "GANTSI" ~	"GANTSI",
       country	== "BOTSWANA" &
         province	== "PALAPYE" &
         district	== "SEROWE/PALAPYE" ~	"SEROWE/PALAPYE",
@@ -5526,84 +5719,137 @@ G <- E |>
       country	=="GUINEA-BISSAU" ~	"WA",
       country	=="GAMBIA" ~	"WA",
       country	=="SENEGAL" ~	"WA",
-      country	=="DEMOCRATIC REPUBLIC OF THE CONGO" ~	"CEA",
+      country	=="DEMOCRATIC REPUBLIC OF THE CONGO" ~	"DRC",
       country	=="CONGO" ~	"CEA",
       country	=="GABON" ~	"CEA",
       country	=="EQUATORIAL GUINEA" ~	"CEA",
-      country	=="RWANDA" ~	"CEA",
-      country	=="BURUNDI" ~	"CEA",
-      country	=="ANGOLA" ~	"CEA",
-      country	=="KENYA" ~	"ES",
-      country	=="ERITREA" ~	"ES",
-      country	=="ETHIOPIA" ~	"ES",
-      country	=="SOUTH SUDAN" ~	"ES",
-      country	=="UGANDA" ~	"ES",
-      country	=="TANZANIA" ~	"ES",
-      country	=="MALAWI" ~	"SNA",
-      country	=="ZAMBIA" ~	"SNA",
-      country	=="MOZAMBIQUE" ~	"SNA",
-      country	=="ZIMBABWE" ~	"SNA",
-      country	=="BOTSWANA" ~	"SNA",
-      country	=="NAMIBIA" ~	"SNA",
-      country	=="ESWATINI (KINGDOM)" ~	"SNA",
-      country	=="LESOTHO(KINGDOM" ~	"SNA",
-      country	=="MADAGASCAR" ~	"ISD",
-      country	=="COMOROS" ~	"ISD",
-      country	=="SEYCHELLES" ~	"ISD",
-      country	=="MAURITIUS" ~	"ISD",
-      country	=="CAPE VERDE" ~	"ISD",
-      country	=="SAO TOME AND PRINCIPE" ~	"ISD"))
+      country	=="RWANDA" ~	"ESA",
+      country	=="BURUNDI" ~	"ESA",
+      country	=="ANGOLA" ~	"ESA",
+      country	=="KENYA" ~	"ESA",
+      country	=="ERITREA" ~	"ESA",
+      country	=="ETHIOPIA" ~	"ESA",
+      country	=="SOUTH SUDAN" ~	"ESA",
+      country	=="UGANDA" ~	"ESA",
+      country	=="TANZANIA" ~	"ESA",
+      country	=="MALAWI" ~	"ESA",
+      country	=="ZAMBIA" ~	"ESA",
+      country	=="MOZAMBIQUE" ~	"ESA",
+      country	=="ZIMBABWE" ~	"ESA",
+      country	=="BOTSWANA" ~	"ESA",
+      country	=="NAMIBIA" ~	"ESA",
+      country	=="ESWATINI (KINGDOM)" ~	"ESA",
+      country	=="LESOTHO(KINGDOM" ~	"ESA",
+      country	=="MADAGASCAR" ~	"ESA",
+      country	=="COMOROS" ~	"ESA",
+      country	=="SEYCHELLES" ~	"ESA",
+      country	=="MAURITIUS" ~	"ESA",
+      country	=="CAPE VERDE" ~	"ESA",
+      country	=="SAO TOME AND PRINCIPE" ~	"ESA")) 
 
-LQAS_result<-G |> 
-  mutate(start_date = as_date(start_date),
-         year = year(start_date)) |> 
-  select(AFRO_block, country, province, district , response , vaccine.type , roundNumber, numbercluster , start_date, end_date, year, male_sampled, female_sampled, total_sampled, male_vaccinated, female_vaccinated , total_vaccinated, total_missed, status , performance, r_non_compliance, r_house_not_visited, r_childabsent, r_child_was_asleep, r_child_is_a_visitor, r_vaccinated_but_not_FM, other_r, prct_care_giver_informed_SIA, prct_non_compliance, prct_house_not_visited, prct_childabsent, prct_child_was_asleep, prct_child_is_a_visitor, prct_vaccinated_but_not_FM, prct_security, prct_childnotborn, prct_other_r) |>
-  arrange(start_date) |> 
-  mutate(start_date = case_when(
-    response == "NIE-2024_nOPV2" & roundNumber == "Rnd1" ~ as_date("2024-03-06"),
-    response == "NIE-2024_nOPV2" & roundNumber == "Rnd3" ~ as_date("2024-10-02"),
-    response == "MOZ-2024-04-01_bOPV" & roundNumber == "Rnd3" ~ as_date("2024-08-03"),
-    TRUE~start_date))
-LQAS_result$rnd_distinct <- paste(LQAS_result$country,LQAS_result$province, LQAS_result$district, LQAS_result$response, LQAS_result$roundNumber, LQAS_result$start_date, sep = "_")
+
+
+library(dplyr)
+library(lubridate)
+library(readxl)
+
+# Read and transform the preparedness data
+date <- read_excel("C:/Users/TOURE/Documents/REPOSITORIES/LQAS_raw_data/harmonized_date/data (5).xlsx")
+
+# Transform the "Round Number" column
+date <- date |> 
+  mutate(`Round Number` = case_when(
+    `Round Number` == "Round 0" ~ "Rnd0",
+    `Round Number` == "Round 1" ~ "Rnd1",
+    `Round Number` == "Round 2" ~ "Rnd2",
+    `Round Number` == "Round 3" ~ "Rnd3",
+    `Round Number` == "Round 4" ~ "Rnd4",
+    `Round Number` == "Round 5" ~ "Rnd5",
+    `Round Number` == "Round 6" ~ "Rnd6",
+    TRUE ~ `Round Number`  # Leave other values unchanged
+  ))
+
+# Prepare the lookup table
+data <- date |> 
+  rename(
+    response = `OBR Name`,        
+    vaccine.type = Vaccines,      
+    roundNumber = `Round Number`  
+  ) |> 
+  mutate(
+    round_start_date = as_date(`Round Start Date`)) |> 
+  mutate(round_start_date = case_when(
+    Country == "ALGERIA" & response == "ALG-2024-01-01_nOPV" & roundNumber == "Rnd1" ~ as_date("2024-02-18"),
+    TRUE ~ round_start_date
+  )) |>
+  mutate(
+    start_date = round_start_date + 4,               
+    end_date = as_date(start_date) + 1)
+
+# convert to tibble
+# Prepare the lookup table with necessary columns
+prep_data <- data |> 
+  select(response, vaccine.type, roundNumber, round_start_date, start_date, end_date)
+
+lookup_table <- as_tibble(prep_data) |> 
+  mutate(
+    start_date = as_date(start_date),
+    end_date = as_date(end_date),
+    round_start_date = as_date(round_start_date)
+  )
+
+# Join the lookup table with the original data `G`
+LQAS_result1 <- G |> 
+  left_join(lookup_table, by = c("response", "vaccine.type", "roundNumber")) |> 
+  mutate(
+    lqas_start_date = coalesce(start_date.y, as_date(start_date.x)),  # Replace missing start_date
+    # lqas_end_date = coalesce(end_date.y, as_date(end_date.x)),  # Replace missing lqas_end_date
+    lqas_end_date = as_date(lqas_start_date) + 1,
+    # Handle `round_start_date`: fallback to `start_date - 4` days if missing
+    round_start_date = coalesce(round_start_date, lqas_start_date - days(4))
+  ) |> 
+  select(-start_date.x, -start_date.y, -end_date.x, -end_date.y) |> 
+  filter(!is.na(district))  # Filter out missing district
+
+# # Display a summary for verification
+# print("Summary of LQAS_result1:")
+# print(summary(LQAS_result1))
+
+
+LQAS_result<-LQAS_result1 |> 
+  mutate(lqas_start_date = as_date(lqas_start_date),
+         year = year(lqas_start_date)) |> 
+  select(AFRO_block, country_code, country, province, district , response , vaccine.type, roundNumber, numbercluster, round_start_date, lqas_start_date, lqas_end_date, year, male_sampled, female_sampled, total_sampled, male_vaccinated, female_vaccinated , total_vaccinated, total_missed, status , performance, r_non_compliance, r_house_not_visited, r_childabsent, r_child_was_asleep, r_child_is_a_visitor, r_vaccinated_but_not_FM, r_childnotborn, r_security, other_r, prct_care_giver_informed_SIA, prct_non_compliance, prct_house_not_visited, prct_childabsent, prct_child_was_asleep, prct_child_is_a_visitor, prct_vaccinated_but_not_FM, prct_security, prct_childnotborn, prct_other_r) |>
+  arrange(lqas_start_date) 
+    
+LQAS_result$rnd_distinct <- paste(LQAS_result$country,LQAS_result$province, LQAS_result$district, LQAS_result$response, LQAS_result$roundNumber, sep = "_")
+
+# LQAS_result$rnd_distinct <- paste(LQAS_result$country,LQAS_result$province, LQAS_result$district, LQAS_result$response, LQAS_result$roundNumber, LQAS_result$lqas_start_date, sep = "_")
 
 LQAS_result<-LQAS_result |> 
-  distinct(rnd_distinct, .keep_all = TRUE)
+  distinct(rnd_distinct, .keep_all = TRUE) |> 
+  mutate(round_start_date = case_when(
+    country == "ALGERIA" & response == "ALG-2023-09-01_nOPV" & roundNumber == "Rnd1" ~ as_date("2024-01-28"),
+    # country == "ALGERIA" & response == "ALG-2024-01-01_nOPV" & roundNumber == "Rnd1" ~ as_date("2024-02-18"),
+    # response == "nOPV2022" & year(lqas_start_date) == 2022 ~ as_date("2022-12-04"),
+    # response == "nOPV2022" & year(lqas_start_date) == 2023 & month(lqas_start_date) == 1 ~ as_date("2023-01-14"),
+    # response == "nOPV2022" & year(lqas_start_date) == 2023 & month(lqas_start_date) == 3 ~ as_date("2023-03-12"),
+    TRUE ~ round_start_date
+  )) |> 
+  mutate(response = case_when(
+    country == "ALGERIA" & response == "nOPV2022" ~ "Algeria Outbreak",
+    TRUE ~ response
+  )) |> 
+  mutate(response = case_when(
+    response == "SEN_VPOn" ~"SEN-79DS-01-2021",
+    response == "Liberia" ~"LBR-15DS-10-2020",
+    response == "RSSmOPV10C2021" ~"SSD-79DS-09-2020",
+    response == "CONAKRY-mOPV" ~"GUE-20DS-02-2021",
+    TRUE ~ response))
 
 
-# scpe <- read_excel("C:/Users/TOURE/Mes documents/REPOSITORIES/SCOPE/data.xlsx")
-# 
-# scope<-scpe |>
-#   rename(roundn = `Round Number`,
-#          response = `OBR Name`,
-#          country = country,
-#          round_start_date = `Round Start Date`) |> 
-#   mutate(roundNumber = case_when(
-#     roundn =="Round 0"~ "Rnd0",
-#     roundn =="Round 1"~ "Rnd1",
-#     roundn =="Round 2"~ "Rnd2",
-#     roundn =="Round 3"~ "Rnd3",
-#     roundn =="Round 4"~ "Rnd4",
-#     roundn =="Round 5"~ "Rnd5",
-#     roundn =="Round 6"~ "Rnd6")) |> 
-#   select(country, response, roundNumber, round_start_date)
-# LQAS_rep <- left_join(LQAS_result, scope,  
-#                       by=c("country" = "country",
-#                            "response" = "response",
-#                            "roundNumber" = "roundNumber")) |> 
-#   select(AFRO_block, country, province, district , response , vaccine.type , roundNumber, round_start_date, numbercluster , start_date, end_date, year, male_sampled, female_sampled, total_sampled, male_vaccinated, female_vaccinated , total_vaccinated, total_missed, status , performance, r_non_compliance, r_house_not_visited, r_childabsent, r_child_was_asleep, r_child_is_a_visitor, r_vaccinated_but_not_FM, other_r, prct_care_giver_informed_SIA, prct_non_compliance, prct_house_not_visited, prct_childabsent, prct_child_was_asleep, prct_child_is_a_visitor, prct_vaccinated_but_not_FM, prct_security, prct_childnotborn, prct_other_r) |> 
-#   rename(lqas_start_date = start_date,
-#          lqas_end_date = end_date) |>
-#   mutate(lqas_start_date = as_date(lqas_start_date),
-#          round_start_date = as_date(round_start_date)) |> 
-#   mutate(lqas_start_date = ifelse(round_start_date > lqas_start_date, (round_start_date + 4), lqas_start_date)) |>
-#   mutate(lqas_end_date = ifelse(round_start_date > lqas_start_date, (round_start_date + 4), lqas_start_date)) |> 
-#   mutate(round_start_date = as_date(round_start_date),
-#          lqas_start_date = as_date(lqas_start_date),
-#          lqas_end_date = as_date(lqas_end_date)) |> 
-#   mutate(round_start_date = as_date(round_start_date)) |> 
-#   mutate(month_yr = format(as.Date(round_start_date), "%Y-%m"))
 
-write_csv(LQAS_result,"C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/AFRO_LQAS_data_c.csv")
+write_csv(LQAS_result,"C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/LCB_LQAS_data_c.csv")
 
 
 
