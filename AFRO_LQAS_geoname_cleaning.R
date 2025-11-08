@@ -10,7 +10,7 @@ library(lubridate)
 library(readxl)
 library(ggplot2)
 
-A<- read_csv("C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/LCB_LQAS_data.csv")
+A<- read_csv("C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/AFRO_LQAS_data.csv")
 
 C<-A |>
   filter(start_date >  as_date(2019-10-1)) |>
@@ -5849,11 +5849,11 @@ LQAS_result<-LQAS_result |>
 
 
 
-write_csv(LQAS_result,"C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/LCB_LQAS_data_c.csv")
+write_csv(LQAS_result,"C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/AFRO_LQAS_data_c.csv")
 
 
 
-
+write_csv(LQAS_result,"C:/Users/TOURE/Documents/REPOSITORIES/input/AFRO_LQAS_data_c.csv")
 
 
 
