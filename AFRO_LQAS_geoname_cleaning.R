@@ -5830,7 +5830,7 @@ LQAS_result<-LQAS_result |>
   distinct(rnd_distinct, .keep_all = TRUE) |> 
   mutate(round_start_date = case_when(
     country == "ALGERIA" & response == "ALG-2023-09-01_nOPV" & roundNumber == "Rnd1" ~ as_date("2024-01-28"),
-    # country == "ALGERIA" & response == "ALG-2024-01-01_nOPV" & roundNumber == "Rnd1" ~ as_date("2024-02-18"),
+    country == "CENTRAL AFRICAN REPUBLIC" & response == "RCA-2025-10-01_nOPV_NIDs" & roundNumber == "Rnd1" ~ as_date("2025-11-28"),
     # response == "nOPV2022" & year(lqas_start_date) == 2022 ~ as_date("2022-12-04"),
     # response == "nOPV2022" & year(lqas_start_date) == 2023 & month(lqas_start_date) == 1 ~ as_date("2023-01-14"),
     # response == "nOPV2022" & year(lqas_start_date) == 2023 & month(lqas_start_date) == 3 ~ as_date("2023-03-12"),
