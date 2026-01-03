@@ -5856,7 +5856,7 @@ write_csv(LQAS_result,"C:/Users/TOURE/Mes documents/REPOSITORIES/LQAS_raw_data/A
 write_csv(LQAS_result,"C:/Users/TOURE/Documents/REPOSITORIES/input/AFRO_LQAS_data_c.csv")
 
 
-
+names(LQAS_result)
 
 
 
