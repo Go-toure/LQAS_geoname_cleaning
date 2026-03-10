@@ -5791,25 +5791,47 @@ data <- date |>
 prep_data <- data |> 
   select(response, vaccine.type, roundNumber, round_start_date, start_date, end_date)
 
-lookup_table <- as_tibble(prep_data) |> 
+# lookup_table <- as_tibble(prep_data) |> 
+#   mutate(
+#     start_date = as_date(start_date),
+#     end_date = as_date(end_date),
+#     round_start_date = as_date(round_start_date)
+#   )
+# 
+# # Join the lookup table with the original data `G`
+# LQAS_result1 <- G |> 
+#   left_join(lookup_table, by = c("response", "vaccine.type", "roundNumber")) |> 
+#   mutate(
+#     lqas_start_date = coalesce(start_date.y, as_date(start_date.x)),  # Replace missing start_date
+#     # lqas_end_date = coalesce(end_date.y, as_date(end_date.x)),  # Replace missing lqas_end_date
+#     lqas_end_date = as_date(lqas_start_date) + 1,
+#     # Handle `round_start_date`: fallback to `start_date - 4` days if missing
+#     round_start_date = coalesce(round_start_date, lqas_start_date - days(4))
+#   ) |> 
+#   select(-start_date.x, -start_date.y, -end_date.x, -end_date.y) |> 
+#   filter(!is.na(district))  # Filter out missing district
+
+lookup_table <- as_tibble(prep_data) |>
   mutate(
     start_date = as_date(start_date),
     end_date = as_date(end_date),
     round_start_date = as_date(round_start_date)
+  ) |>
+  rename(
+    prep_round_start_date = round_start_date,
+    prep_start_date = start_date,
+    prep_end_date = end_date
   )
 
-# Join the lookup table with the original data `G`
-LQAS_result1 <- G |> 
-  left_join(lookup_table, by = c("response", "vaccine.type", "roundNumber")) |> 
+LQAS_result1 <- G |>
+  left_join(lookup_table, by = c("response", "vaccine.type", "roundNumber")) |>
   mutate(
-    lqas_start_date = coalesce(start_date.y, as_date(start_date.x)),  # Replace missing start_date
-    # lqas_end_date = coalesce(end_date.y, as_date(end_date.x)),  # Replace missing lqas_end_date
+    lqas_start_date = coalesce(prep_start_date, as_date(start_date)),
     lqas_end_date = as_date(lqas_start_date) + 1,
-    # Handle `round_start_date`: fallback to `start_date - 4` days if missing
-    round_start_date = coalesce(round_start_date, lqas_start_date - days(4))
-  ) |> 
-  select(-start_date.x, -start_date.y, -end_date.x, -end_date.y) |> 
-  filter(!is.na(district))  # Filter out missing district
+    round_start_date = coalesce(prep_round_start_date, as_date(round_start_date), lqas_start_date - days(4))
+  ) |>
+  select(-prep_start_date, -prep_end_date, -prep_round_start_date) |>
+  filter(!is.na(district))
 
 # # Display a summary for verification
 # print("Summary of LQAS_result1:")
@@ -5818,8 +5840,61 @@ LQAS_result1 <- G |>
 
 LQAS_result<-LQAS_result1 |> 
   mutate(lqas_start_date = as_date(lqas_start_date),
-         year = year(lqas_start_date)) |> 
-  select(AFRO_block, country_code, country, province, district , response , vaccine.type, roundNumber, numbercluster, round_start_date, lqas_start_date, lqas_end_date, year, male_sampled, female_sampled, total_sampled, male_vaccinated, female_vaccinated , total_vaccinated, total_missed, status , performance, r_non_compliance, r_house_not_visited, r_childabsent, r_child_was_asleep, r_child_is_a_visitor, r_vaccinated_but_not_FM, r_childnotborn, r_security, other_r, prct_care_giver_informed_SIA, prct_non_compliance, prct_house_not_visited, prct_childabsent, prct_child_was_asleep, prct_child_is_a_visitor, prct_vaccinated_but_not_FM, prct_security, prct_childnotborn, prct_other_r) |>
+         year = year(lqas_start_date)) |>
+  select(
+    any_of(c(
+      "AFRO_block",
+      "country_code",
+      "country",
+      "province",
+      "district",
+      "response",
+      "vaccine.type",
+      "roundNumber",
+      "numbercluster",
+      "round_start_date",
+      "lqas_start_date",
+      "lqas_end_date",
+      "year",
+      
+      "male_sampled",
+      "female_sampled",
+      "total_sampled",
+      
+      "male_vaccinated",
+      "female_vaccinated",
+      "total_vaccinated",
+      
+      "total_missed",
+      "status",
+      "performance",
+      
+      "r_non_compliance",
+      "r_house_not_visited",
+      "r_childabsent",
+      "r_child_was_asleep",
+      "r_child_is_a_visitor",
+      "r_vaccinated_but_not_FM",
+      "r_childnotborn",
+      "r_security",
+      "other_r",
+      
+      "prct_care_giver_informed_SIA",
+      "prct_non_compliance",
+      "prct_house_not_visited",
+      "prct_childabsent",
+      "prct_child_was_asleep",
+      "prct_child_is_a_visitor",
+      "prct_vaccinated_but_not_FM",
+      "prct_security",
+      "prct_childnotborn",
+      "prct_other_r"
+    )),
+    
+    starts_with("abs_reason_"),
+    starts_with("nc_reason_")
+  ) |>
+  select(-abs_reason_diff, -abs_reason_consistent_pct, -abs_reason_check, -abs_reason_total, -nc_reason_diff, -nc_reason_consistent_pct, -nc_reason_check, -nc_reason_total) |>
   arrange(lqas_start_date) 
     
 LQAS_result$rnd_distinct <- paste(LQAS_result$country,LQAS_result$province, LQAS_result$district, LQAS_result$response, LQAS_result$roundNumber, sep = "_")
